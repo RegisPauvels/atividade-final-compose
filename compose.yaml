@@ -1,0 +1,31 @@
+version: "3.8"
+
+networks:
+  rede-gerenciador:
+    driver: bridge
+
+volumes:
+  mongo-data:
+
+services:
+  mongo:
+    image: mongo:6.0
+    container_name: mongo-db
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - rede-gerenciador
+    restart: unless-stopped
+
+  aplicacao:
+    image: regisferreira/atividadefinal:latest
+    container_name: aplicacao
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/gerenciador-reportagens
+    networks:
+      - rede-gerenciador
+    restart: unless-stopped
